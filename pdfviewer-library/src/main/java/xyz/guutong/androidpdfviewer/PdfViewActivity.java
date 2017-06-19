@@ -21,6 +21,7 @@ import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.scroll.DefaultScrollHandle;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import xyz.guutong.androidpdfviewer.Utils.DownloadFile;
 
@@ -118,16 +119,23 @@ public class PdfViewActivity extends AppCompatActivity implements DownloadFile.L
         // loading local pdf file
         try {
             File file = new File(pdfUrl);
-            pdfView.fromFile(file)
-                    .defaultPage(0)
-                    .onPageChange(this)
-                    .enableAnnotationRendering(true)
-                    .onLoad(this)
-                    .scrollHandle(scrollHandle)
-                    .swipeHorizontal(swipeHorizontal)
-                    .load();
 
-        } catch (Exception error) {
+            if (file.exists()) {
+                pdfView.fromFile(file)
+                        .defaultPage(0)
+                        .onPageChange(this)
+                        .enableAnnotationRendering(true)
+                        .onLoad(this)
+                        .scrollHandle(scrollHandle)
+                        .swipeHorizontal(swipeHorizontal)
+                        .load();
+            } else {
+                throw new FileNotFoundException("");
+            }
+
+        } catch (FileNotFoundException error) {
+            progressBar.setVisibility(View.GONE);
+
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Could not open file.");
             builder.show();
